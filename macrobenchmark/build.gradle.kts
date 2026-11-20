@@ -27,10 +27,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
@@ -52,6 +48,12 @@ android {
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
 dependencies {
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.espresso.core)
@@ -61,6 +63,6 @@ dependencies {
 
 androidComponents {
     beforeVariants(selector().all()) {
-        it.enabled = it.buildType == "benchmark"
+        it.enable = it.buildType == "benchmark"
     }
 }

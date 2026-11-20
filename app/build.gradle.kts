@@ -45,7 +45,7 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = true
-      proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
     create("benchmark") {
       initWith(getByName("release"))
@@ -62,20 +62,12 @@ android {
     targetCompatibility = JavaVersion.VERSION_17
   }
 
-  kotlinOptions {
-    // work-runtime-ktx 2.1.0 and above now requires Java 8
-    jvmTarget = JavaVersion.VERSION_17.toString()
-
-    // Enable Coroutines and Flow APIs
-    freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-    freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlinx.coroutines.FlowPreview"
-  }
   buildFeatures {
     compose = true
     dataBinding = true
     buildConfig = true
   }
-  packagingOptions {
+  packaging {
     // Multiple dependency bring these files in. Exclude them to enable
     // our test APK to build (has no effect on our AARs)
     resources.excludes += "/META-INF/AL2.0"
@@ -84,8 +76,8 @@ android {
 
   testOptions {
     managedDevices {
-      devices {
-        maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel2api27").apply {
+      localDevices {
+        maybeCreate("pixel2api27").apply {
           device = "Pixel 2"
           apiLevel = 27
           systemImageSource = "aosp"
@@ -94,6 +86,17 @@ android {
     }
   }
   namespace = "com.google.samples.apps.sunflower"
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    // Enable Coroutines and Flow APIs
+    optIn.addAll(
+      "kotlinx.coroutines.ExperimentalCoroutinesApi",
+      "kotlinx.coroutines.FlowPreview",
+    )
+  }
 }
 
 androidComponents {
